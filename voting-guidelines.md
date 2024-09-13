@@ -25,12 +25,17 @@ OPERATION DIRECTIVES
 ## Principles on Treasury Proposals at CardanoGov
 GA - Treasury Withdrawals
 
-Efficiency: Proposals should demonstrate the ability to use resources wisely and achieve significant impact with minimal waste. Efficiency ensures that treasury funds are allocated to projects that maximize value for the ecosystem.
-Strategic Vision: Proposals must align with the long-term goals of Cardano. We support initiatives that foster decentralization, innovation, and sustainable growth, with a clear vision of how they will contribute to the future of the ecosystem.
-Participation: Active engagement with the Cardano community is essential. Proposals should encourage open collaboration and seek input from a wide range of stakeholders to reflect the diverse needs of the ecosystem.
-Accountability: Proposers are expected to fulfill accountability for the funds they receive. Clear milestones, deliverables, and regular reporting should be outlined to ensure that treasury support leads to measurable results.
-Responsibilities: Proposals must outline how the proposers intend to uphold their responsibilities to the Cardano community. This includes acting in the ecosystem’s best interest and ensuring the integrity of the project’s goals.
-Transparency: Transparency is critical in gaining community trust. Proposers must provide detailed and open explanations of their plans, progress, and use of funds, making this information accessible to all community members.
+**Efficiency**: Proposals should demonstrate the ability to use resources wisely and achieve significant impact with minimal waste. Efficiency ensures that treasury funds are allocated to projects that maximize value for the ecosystem.
+
+**Strategic Vision**: Proposals must align with the long-term goals of Cardano. We support initiatives that foster decentralization, innovation, and sustainable growth, with a clear vision of how they will contribute to the future of the ecosystem.
+
+**Participation**: Active engagement with the Cardano community is essential. Proposals should encourage open collaboration and seek input from a wide range of stakeholders to reflect the diverse needs of the ecosystem.
+
+**Accountability**: Proposers are expected to fulfill accountability for the funds they receive. Clear milestones, deliverables, and regular reporting should be outlined to ensure that treasury support leads to measurable results.
+
+**Responsibilities**: Proposals must outline how the proposers intend to uphold their responsibilities to the Cardano community. This includes acting in the ecosystem’s best interest and ensuring the integrity of the project’s goals.
+
+**Transparency**: Transparency is critical in gaining community trust. Proposers must provide detailed and open explanations of their plans, progress, and use of funds, making this information accessible to all community members.
 
 
 1. On-Chain Identity Verification

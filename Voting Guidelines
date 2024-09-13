@@ -10,7 +10,19 @@ https://github.com/MeshJS/DRep/blob/main/LICENSE
 
 The bullet points are not ordered by importance. These items are numbered only to facilitate search when it’s quoted in the future.
 
-Principles on Treasury Proposals at CardanoGov
+OPERATION DIRECTIVES
+1. We maintain most discussion regarding active proposals public and we try to keep it that way. But we are very open to private communications whenever the case requires it.
+
+2. In some cases, we approach the proposer(s) to ask for clarifications. We maintain this approach for delicate topics or smaller clarifications regarding a concrete topic. We are also open to invitations to discussions within private channels that seek to develop proposals or explain proposals.
+
+3. We are open to pre-publication feedback. So, if proposers get in touch with us before their referenda and ask us for feedback before a proposal becomes public, we usually accept it and provide feedback regarding the proposal. We reserve the right to engage or deny engagement with proposers based on our own criteria and based on own previous experience, however.
+
+4. We never become authors of referenda unless we form part of it either as proposer, curator or beneficiary of the proposal.
+
+5. Our experience has shown us that private information, pseudo-confidential or privileged information usually contain insignificant weight and it’s often misleading so public discourse is a must for our operations. In consequence, we have never signed NDAs or confidentiality agreements of any kind. So, our push will always favor open communication.
+
+
+## Principles on Treasury Proposals at CardanoGov
 GA - Treasury Withdrawals
 
 Efficiency: Proposals should demonstrate the ability to use resources wisely and achieve significant impact with minimal waste. Efficiency ensures that treasury funds are allocated to projects that maximize value for the ecosystem.
@@ -95,6 +107,7 @@ Requirement:
 The treasury must not be used to fund the liquidity of memecoins, pump-and-dump schemes, or airdrops. These activities carry significant risks for users, as they can expose them to scams, malware, or intentional financial losses. Such proposals should be strictly avoided to safeguard the integrity of the Cardano ecosystem.
 Rationale:
 Funding risky activities like memecoins, pump-and-dumps, or airdrops can have serious consequences for users, leading to potential scams and financial harm. In addition, supporting these types of projects would damage the reputation of the Cardano ecosystem and its associated entities. To maintain the trust and confidence of the community and external stakeholders, the treasury should focus on supporting projects that contribute positively to the ecosystem’s growth and long-term sustainability.
+
 13. Contingency Planning for Unexpected Incidents
 Requirement:
 Proposers must include a contingency plan in their proposal, outlining steps they will take in the event of unforeseen circumstances that prevent the project from continuing as planned. This plan should detail how the team will address disruptions, whether by adjusting the project’s scope, reallocating funds, or issuing refunds to the treasury.

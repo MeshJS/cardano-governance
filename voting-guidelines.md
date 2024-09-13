@@ -118,3 +118,6 @@ Requirement:
 Proposers must include a contingency plan in their proposal, outlining steps they will take in the event of unforeseen circumstances that prevent the project from continuing as planned. This plan should detail how the team will address disruptions, whether by adjusting the project’s scope, reallocating funds, or issuing refunds to the treasury.
 Rationale:
 Unexpected challenges such as market changes, team issues, or technological barriers may affect a project's progress. A clear contingency plan ensures accountability and transparency, allowing the community to understand how the proposer plans to mitigate risks. It also ensures that treasury funds are protected and managed responsibly in case the project cannot proceed as originally intended.
+
+
+These Guidelines are adapted/adopted from Saxemberg Treasury Guidelines https://saxemberg.com/guidelines/

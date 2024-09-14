@@ -5,7 +5,7 @@ With the adoption of Voltaire, we have created acertain guidelines and directive
 Evolution of this document is visible on Github
 This document is always subject to change.
 
-This document is open source so anyone is free to used it in any way they deem necessary, Find the license on: 
+This document is open source so anyone is free to use it in any way they deem necessary, Find the license on: 
 https://github.com/MeshJS/DRep/blob/main/LICENSE 
 
 The bullet points are not ordered by importance. These items are numbered only to facilitate search when it’s quoted in the future.

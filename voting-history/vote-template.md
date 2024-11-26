@@ -1,15 +1,13 @@
 |MeshJS DRep|Cardano Governance Actions|
 |----------------|---------------------------|
 |Proposal Title|[Propoals Title](url)|
-|Hash|add|
-|Action ID|add|
+|Governance Action ID|add|
 |Type|add|
 |Submitted|dd/mm/yyyy / Epoch:|
 |Expires|dd/mm/yyyy / Epoch:|
 |Vote|✅YES/❌NO/⏹️Abstain|
-|Vote Power|ADA|
 |Rational|add|
-|Shared|Link to X Post|
+|Vote tx|tx|
 
 
 > This teamplate and the use of github to track governance history of a delegated voter is heavily inspird by Kukabi, Polkadot DV Cohort #1

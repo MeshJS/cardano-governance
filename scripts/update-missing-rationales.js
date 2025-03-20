@@ -22,14 +22,14 @@ function extractGovernanceActionId(content) {
 
 // Function to extract rationale from a voting history entry
 function extractRationale(content) {
-    const rationaleMatch = content.match(/Rational\s+\|\s+([^\n]+)/);
+    const rationaleMatch = content.match(/(?:Rational|Rationale)\s+\|\s+([^\n]+)/);
     return rationaleMatch ? rationaleMatch[1].trim() : null;
 }
 
 // Function to update rationale in content
 function updateRationale(content, newRationale) {
     return content.replace(
-        /Rational\s+\|\s+[^\n]+/,
+        /(?:Rational|Rationale)\s+\|\s+[^\n]+/,
         `Rational       | ${newRationale}`
     );
 }
@@ -49,7 +49,7 @@ async function updateMissingRationales() {
         const content = fs.readFileSync(path.join(missingRationalesDir, file), 'utf8');
         const parsed = parseMarkdownTable(content);
         if (parsed['Governance Action ID']) {
-            rationaleMap.set(parsed['Governance Action ID'], parsed['Rationale']);
+            rationaleMap.set(parsed['Governance Action ID'], parsed['Rational']);
         }
     }
 

@@ -29,7 +29,8 @@ function extractGovernanceActionId(content) {
 
 // Function to extract rationale from a voting history entry
 function extractRationale(content) {
-    const rationaleMatch = content.match(/(?:Rational|Rationale)\s+\|\s+([^\n]+)/);
+    // Look for Rational or Rationale followed by a pipe and any characters until the next pipe or newline
+    const rationaleMatch = content.match(/(?:Rational|Rationale)\s+\|\s+([^|\n]+)/);
     const rationale = rationaleMatch ? rationaleMatch[1].trim() : null;
     // Return null if the rationale is "No rationale available" or empty
     return (!rationale || rationale === 'No rationale available') ? null : rationale;
@@ -37,8 +38,9 @@ function extractRationale(content) {
 
 // Function to update rationale in content
 function updateRationale(content, newRationale) {
+    // Match Rational or Rationale followed by a pipe and any characters until the next pipe or newline
     return content.replace(
-        /(?:Rational|Rationale)\s+\|\s+[^\n]+/,
+        /(?:Rational|Rationale)\s+\|\s+[^|\n]+/,
         `Rational       | ${newRationale}`
     );
 }
@@ -108,8 +110,8 @@ async function updateMissingRationales() {
             const currentRationale = extractRationale(entry);
             console.log('Current rationale:', currentRationale);
 
-            // Skip only if there's a valid, non-empty rationale
-            if (currentRationale && currentRationale !== 'No rationale available') {
+            // Skip only if there's a valid rationale (not null)
+            if (currentRationale) {
                 console.log('Entry already has a valid rationale, skipping');
                 return entry;
             }

@@ -92,8 +92,12 @@ function generateVoteTable(vote, proposalDetails, metadata) {
     // Get proposal details
     const proposal = proposalDetails[vote.proposalId] || {};
 
-    // Extract proposal title from proposal details first, then fallback to metadata
-    const proposalTitle = proposal.meta_json?.body?.title || 'Unknown Proposal';
+    // Extract proposal title from proposal details first, then fallback to metadata and rationales.json
+    let proposalTitle = proposal.meta_json?.body?.title;
+    if (!proposalTitle && vote.proposalId) {
+        proposalTitle = missingRationales[vote.proposalId]?.title;
+    }
+    proposalTitle = proposalTitle || 'Unknown Proposal';
 
     // Format dates
     const submittedDate = vote.blockTime ? new Date(vote.blockTime).toLocaleDateString() : 'N/A';

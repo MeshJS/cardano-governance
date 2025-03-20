@@ -34,7 +34,7 @@
 
 | MeshJS      | Cardano Governance Actions |
 | -------------- | ------------------------------------------------------- |
-| Proposal Title | [Unknown Proposal](https://adastat.net/governances/8c653ee5c9800e6d31e79b5a7f7d4400c81d44717ad4db633dc18d4c07e4a4fd00) |
+| Proposal Title | [Cardano Constitution to Replace the Interim Constitution](https://adastat.net/governances/8c653ee5c9800e6d31e79b5a7f7d4400c81d44717ad4db633dc18d4c07e4a4fd00) |
 | Hash           | 8c653ee5c9800e6d31e79b5a7f7d4400c81d44717ad4db633dc18d4c07e4a4fd00 |
 | Action ID      | gov_action133jnaewfsq8x6v08ndd87l2yqryp63r30t2dkceacxx5cply5n7sqzlcyqf |
 | Type           | NewConstitution |

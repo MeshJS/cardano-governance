@@ -3,10 +3,21 @@ const path = require('path');
 
 // Function to parse a markdown table into an object
 function parseMarkdownTable(content) {
-    const lines = content.split('\n');
+    const lines = content.split('\n').filter(line => line.trim());
     const headers = lines[0].split('|').filter(h => h.trim());
-    const values = lines[1].split('|').filter(v => v.trim());
 
+    // Find the first non-separator line after the headers
+    const dataLine = lines.find(line => {
+        const cells = line.split('|').filter(c => c.trim());
+        return cells.length === headers.length && !cells.every(cell => cell.includes('---'));
+    });
+
+    if (!dataLine) {
+        console.log('No data line found in table');
+        return {};
+    }
+
+    const values = dataLine.split('|').filter(v => v.trim());
     const result = {};
     headers.forEach((header, index) => {
         result[header.trim()] = values[index].trim();
@@ -50,9 +61,12 @@ async function updateMissingRationales() {
     // Create a map of governance action IDs to rationales
     const rationaleMap = new Map();
     for (const file of missingRationaleFiles) {
-        const content = fs.readFileSync(path.join(missingRationalesDir, file), 'utf8');
-        const parsed = parseMarkdownTable(content);
+        const filePath = path.join(missingRationalesDir, file);
+        const content = fs.readFileSync(filePath, 'utf8');
         console.log(`\nProcessing file: ${file}`);
+        console.log('File contents:', content);
+
+        const parsed = parseMarkdownTable(content);
         console.log('Parsed data:', parsed);
 
         if (parsed['Governance Action ID']) {

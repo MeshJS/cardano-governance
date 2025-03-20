@@ -25,9 +25,6 @@ jobs:
         KOIOS_API_KEY: ${{ secrets.KOIOS_API_KEY }}
       run: node scripts/voting-action.js
 
-    - name: Update missing rationales
-      run: node scripts/update-missing-rationales.js
-
     - name: Check for changes
       id: git-check
       run: |

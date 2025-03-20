@@ -1,26 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// Function to parse a markdown table into an object
-function parseMarkdownTable(content) {
-    const lines = content.split('\n').filter(line => line.trim());
-    const result = {};
-
-    // Skip the header and separator lines
-    for (let i = 2; i < lines.length; i++) {
-        const line = lines[i];
-        const cells = line.split('|')
-            .map(c => c.trim())
-            .filter(c => c);
-
-        if (cells.length === 2) {
-            result[cells[0]] = cells[1];
-        }
-    }
-
-    return result;
-}
-
 // Function to extract governance action ID from a voting history entry
 function extractGovernanceActionId(content) {
     const actionIdMatch = content.match(/Action ID\s+\|\s+(gov_action[^\n]+)/);
@@ -48,41 +28,13 @@ function updateRationale(content, newRationale) {
 // Main function to process files
 async function updateMissingRationales() {
     const votingHistoryDir = path.join(__dirname, '../voting-history');
-    const missingRationalesDir = path.join(__dirname, '../voting-history/missing-voting-rationales');
+    const rationalesFile = path.join(__dirname, '../voting-history/missing-voting-rationales/rationales.json');
 
-    console.log('Reading missing rationales from:', missingRationalesDir);
+    console.log('Reading rationales from:', rationalesFile);
 
-    // Read all files in missing-voting-rationales directory
-    const missingRationaleFiles = fs.readdirSync(missingRationalesDir)
-        .filter(file => file.endsWith('.md') && file !== 'vote-template.md');
-
-    console.log('Found missing rationale files:', missingRationaleFiles);
-
-    // Create a map of governance action IDs to rationales
-    const rationaleMap = new Map();
-    for (const file of missingRationaleFiles) {
-        const filePath = path.join(missingRationalesDir, file);
-        const content = fs.readFileSync(filePath, 'utf8');
-        console.log(`\nProcessing file: ${file}`);
-
-        const parsed = parseMarkdownTable(content);
-        console.log('Parsed data:', parsed);
-
-        // Look for either 'Governance Action ID' or 'Action ID'
-        const actionId = parsed['Governance Action ID'] || parsed['Action ID'];
-        const rationale = parsed['Rational'] || parsed['Rationale'];
-
-        if (actionId) {
-            rationaleMap.set(actionId, rationale);
-            console.log(`Added rationale for action ID: ${actionId}`);
-            console.log(`Rationale: ${rationale}`);
-        } else {
-            console.log('No Action ID found in file');
-            console.log('Available fields:', Object.keys(parsed));
-        }
-    }
-
-    console.log('\nRationale map:', Object.fromEntries(rationaleMap));
+    // Read the rationales JSON file
+    const rationales = JSON.parse(fs.readFileSync(rationalesFile, 'utf8'));
+    console.log('Loaded rationales for', Object.keys(rationales).length, 'actions');
 
     // Process each voting history file
     const years = fs.readdirSync(votingHistoryDir)
@@ -116,13 +68,15 @@ async function updateMissingRationales() {
                 return entry;
             }
 
-            const newRationale = rationaleMap.get(actionId);
-            if (newRationale) {
-                console.log('Found new rationale:', newRationale);
+            const rationaleData = rationales[actionId.trim()];
+            if (rationaleData) {
+                console.log('Found new rationale:', rationaleData.rationale);
                 updated = true;
-                return updateRationale(entry, newRationale);
+                return updateRationale(entry, rationaleData.rationale);
             } else {
                 console.log('No matching rationale found in map');
+                console.log('Looking for:', actionId.trim());
+                console.log('Available action IDs:', Object.keys(rationales));
             }
             return entry;
         });

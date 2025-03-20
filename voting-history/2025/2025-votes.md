@@ -10,7 +10,7 @@
 | Expires Epoch  | 549                                                                                                                              |
 | Vote           | ✅Yes                                                                                                                                   |
 | Vote Submitted | 3/11/2025                                                                                                                              |
-| Rational       | No rationale available |
+| Rational       | We see the proposed roadmap for 2025 as a helpful effort in building ecosystem wide alignment on top priorities, and vote Yes on this proposal. We also hope that this proposal will encourage other efforts which aim to propose further roadmaps for the Cardano ecosystem. Since we achieved the last of the initial Cardano Milestones with Voltaire, we think that longterm roadmaps at Cardano have proven their worth and value and are a existential part of our culture and careful longterm thinking |
 |Link|https://adastat.net/transactions/464ceed8ec269a28d3fee305b1c0d397270b8193fbbb2557ab51c1b070f9171f |
 
 
@@ -26,7 +26,7 @@
 | Expires Epoch  | 546                                                                                                                              |
 | Vote           | ❌No                                                                                                                                   |
 | Vote Submitted | 2/22/2025                                                                                                                              |
-| Rational       | No rationale available |
+| Rational       | While we generally agree to reduce treasury spending and think that reducing the allocation to the Treasury is a effective way to achieve lower spending capacities, we yet see that we lack research on how such changes will impact the SPO ecosystem and deem that we currently should not change treasury income before we have better insights |
 |Link|https://adastat.net/transactions/08b9205dcac01fed95287f6dc82f744cf66792c1de9f65d318c1085d2bca5946 |
 
 

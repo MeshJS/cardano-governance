@@ -39,43 +39,70 @@ async function updateMissingRationales() {
     const votingHistoryDir = path.join(__dirname, '../voting-history');
     const missingRationalesDir = path.join(__dirname, '../voting-history/missing-voting-rationales');
 
+    console.log('Reading missing rationales from:', missingRationalesDir);
+
     // Read all files in missing-voting-rationales directory
     const missingRationaleFiles = fs.readdirSync(missingRationalesDir)
         .filter(file => file.endsWith('.md') && file !== 'vote-template.md');
+
+    console.log('Found missing rationale files:', missingRationaleFiles);
 
     // Create a map of governance action IDs to rationales
     const rationaleMap = new Map();
     for (const file of missingRationaleFiles) {
         const content = fs.readFileSync(path.join(missingRationalesDir, file), 'utf8');
         const parsed = parseMarkdownTable(content);
+        console.log(`\nProcessing file: ${file}`);
+        console.log('Parsed data:', parsed);
+
         if (parsed['Governance Action ID']) {
             rationaleMap.set(parsed['Governance Action ID'], parsed['Rational']);
+            console.log(`Added rationale for action ID: ${parsed['Governance Action ID']}`);
+        } else {
+            console.log('No Governance Action ID found in file');
         }
     }
+
+    console.log('\nRationale map:', Object.fromEntries(rationaleMap));
 
     // Process each voting history file
     const years = fs.readdirSync(votingHistoryDir)
         .filter(dir => /^\d{4}$/.test(dir));
 
+    console.log('\nProcessing years:', years);
+
     for (const year of years) {
         const votesFile = path.join(votingHistoryDir, year, `${year}-votes.md`);
         if (!fs.existsSync(votesFile)) continue;
 
+        console.log(`\nProcessing votes file: ${votesFile}`);
         let content = fs.readFileSync(votesFile, 'utf8');
         const entries = content.split('---\n\n').filter(entry => entry.trim());
 
         let updated = false;
         const updatedEntries = entries.map(entry => {
             const actionId = extractGovernanceActionId(entry);
-            if (!actionId) return entry;
+            if (!actionId) {
+                console.log('No Action ID found in entry');
+                return entry;
+            }
 
+            console.log(`\nProcessing entry with Action ID: ${actionId}`);
             const currentRationale = extractRationale(entry);
-            if (currentRationale && currentRationale !== 'No rationale available') return entry;
+            console.log('Current rationale:', currentRationale);
+
+            if (currentRationale && currentRationale !== 'No rationale available') {
+                console.log('Entry already has a rationale, skipping');
+                return entry;
+            }
 
             const newRationale = rationaleMap.get(actionId);
             if (newRationale) {
+                console.log('Found new rationale:', newRationale);
                 updated = true;
                 return updateRationale(entry, newRationale);
+            } else {
+                console.log('No matching rationale found in map');
             }
             return entry;
         });
@@ -84,6 +111,8 @@ async function updateMissingRationales() {
             const newContent = updatedEntries.join('---\n\n');
             fs.writeFileSync(votesFile, newContent);
             console.log(`Updated rationales in ${votesFile}`);
+        } else {
+            console.log('No updates needed for this file');
         }
     }
 }

@@ -3,12 +3,9 @@ const path = require('path');
 
 // Function to extract governance action ID from a voting history entry
 function extractGovernanceActionId(content) {
-    // Debug logging
-    console.log('\nTrying to extract Action ID from content:');
-    console.log('Content:', content);
-
     // Match gov_action followed by base32 characters until whitespace or end of line
-    const actionIdMatch = content.match(/Action ID\s+\|\s+(gov_action[a-zA-Z2-7]+)/);
+    // Handle multiple spaces after the pipe character
+    const actionIdMatch = content.match(/\| Action ID\s+\|\s+(gov_action[a-zA-Z2-7]+)/);
 
     // Debug logging
     if (actionIdMatch) {

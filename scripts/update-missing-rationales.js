@@ -4,25 +4,47 @@ const path = require('path');
 // Function to parse a markdown table into an object
 function parseMarkdownTable(content) {
     const lines = content.split('\n').filter(line => line.trim());
-    const headers = lines[0].split('|').filter(h => h.trim());
 
-    // Skip the separator line (line with dashes)
-    const dataLines = lines.slice(2).filter(line => {
-        const cells = line.split('|').filter(c => c.trim());
-        return cells.length === headers.length && !cells.every(cell => cell.includes('---'));
+    // Find the header line and separator line
+    const headerLine = lines[0];
+    const separatorLine = lines[1];
+
+    // Get headers from the first line
+    const headers = headerLine.split('|')
+        .map(h => h.trim())
+        .filter(h => h);
+
+    // Get the separator line to determine column widths
+    const separatorCells = separatorLine.split('|')
+        .map(c => c.trim())
+        .filter(c => c);
+
+    // Find the first data line (after the separator)
+    const dataLineIndex = lines.findIndex((line, index) => {
+        if (index <= 1) return false; // Skip header and separator
+        const cells = line.split('|')
+            .map(c => c.trim())
+            .filter(c => c);
+        return cells.length === headers.length;
     });
 
-    if (dataLines.length === 0) {
-        console.log('No data lines found in table');
+    if (dataLineIndex === -1) {
+        console.log('No data line found in table');
         return {};
     }
 
-    // Use the first data line
-    const values = dataLines[0].split('|').filter(v => v.trim());
+    // Parse the data line
+    const dataLine = lines[dataLineIndex];
+    const values = dataLine.split('|')
+        .map(v => v.trim())
+        .filter(v => v);
+
+    // Create result object
     const result = {};
     headers.forEach((header, index) => {
-        result[header.trim()] = values[index].trim();
+        result[header] = values[index];
     });
+
     return result;
 }
 
@@ -35,7 +57,9 @@ function extractGovernanceActionId(content) {
 // Function to extract rationale from a voting history entry
 function extractRationale(content) {
     const rationaleMatch = content.match(/(?:Rational|Rationale)\s+\|\s+([^\n]+)/);
-    return rationaleMatch ? rationaleMatch[1].trim() : null;
+    const rationale = rationaleMatch ? rationaleMatch[1].trim() : null;
+    // Return null if the rationale is "No rationale available"
+    return rationale === 'No rationale available' ? null : rationale;
 }
 
 // Function to update rationale in content
@@ -79,6 +103,7 @@ async function updateMissingRationales() {
             console.log(`Rationale: ${rationale}`);
         } else {
             console.log('No Action ID found in file');
+            console.log('Available fields:', Object.keys(parsed));
         }
     }
 
@@ -110,8 +135,9 @@ async function updateMissingRationales() {
             const currentRationale = extractRationale(entry);
             console.log('Current rationale:', currentRationale);
 
-            if (currentRationale && currentRationale !== 'No rationale available') {
-                console.log('Entry already has a rationale, skipping');
+            // Only skip if there's a valid rationale
+            if (currentRationale) {
+                console.log('Entry already has a valid rationale, skipping');
                 return entry;
             }
 

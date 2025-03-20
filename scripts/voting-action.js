@@ -107,8 +107,8 @@ function generateVoteTable(vote, proposalDetails, metadata) {
     let rationale = metadata?.body?.comment || metadata?.body?.rationale || 'No rationale available';
 
     // Check for missing rationale in the rationales.json file
-    if (rationale === 'No rationale available' && vote.proposalTxHash) {
-        const missingRationale = missingRationales[vote.proposalTxHash];
+    if (rationale === 'No rationale available' && vote.proposalId) {
+        const missingRationale = missingRationales[vote.proposalId];
         if (missingRationale && missingRationale.rationale) {
             rationale = missingRationale.rationale;
         }

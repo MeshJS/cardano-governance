@@ -4,46 +4,19 @@ const path = require('path');
 // Function to parse a markdown table into an object
 function parseMarkdownTable(content) {
     const lines = content.split('\n').filter(line => line.trim());
+    const result = {};
 
-    // Find the header line and separator line
-    const headerLine = lines[0];
-    const separatorLine = lines[1];
-
-    // Get headers from the first line
-    const headers = headerLine.split('|')
-        .map(h => h.trim())
-        .filter(h => h);
-
-    // Get the separator line to determine column widths
-    const separatorCells = separatorLine.split('|')
-        .map(c => c.trim())
-        .filter(c => c);
-
-    // Find the first data line (after the separator)
-    const dataLineIndex = lines.findIndex((line, index) => {
-        if (index <= 1) return false; // Skip header and separator
+    // Skip the header and separator lines
+    for (let i = 2; i < lines.length; i++) {
+        const line = lines[i];
         const cells = line.split('|')
             .map(c => c.trim())
             .filter(c => c);
-        return cells.length === headers.length;
-    });
 
-    if (dataLineIndex === -1) {
-        console.log('No data line found in table');
-        return {};
+        if (cells.length === 2) {
+            result[cells[0]] = cells[1];
+        }
     }
-
-    // Parse the data line
-    const dataLine = lines[dataLineIndex];
-    const values = dataLine.split('|')
-        .map(v => v.trim())
-        .filter(v => v);
-
-    // Create result object
-    const result = {};
-    headers.forEach((header, index) => {
-        result[header] = values[index];
-    });
 
     return result;
 }
@@ -58,8 +31,8 @@ function extractGovernanceActionId(content) {
 function extractRationale(content) {
     const rationaleMatch = content.match(/(?:Rational|Rationale)\s+\|\s+([^\n]+)/);
     const rationale = rationaleMatch ? rationaleMatch[1].trim() : null;
-    // Return null if the rationale is "No rationale available"
-    return rationale === 'No rationale available' ? null : rationale;
+    // Return null if the rationale is "No rationale available" or empty
+    return (!rationale || rationale === 'No rationale available') ? null : rationale;
 }
 
 // Function to update rationale in content
@@ -135,8 +108,8 @@ async function updateMissingRationales() {
             const currentRationale = extractRationale(entry);
             console.log('Current rationale:', currentRationale);
 
-            // Only skip if there's a valid rationale
-            if (currentRationale) {
+            // Skip only if there's a valid, non-empty rationale
+            if (currentRationale && currentRationale !== 'No rationale available') {
                 console.log('Entry already has a valid rationale, skipping');
                 return entry;
             }

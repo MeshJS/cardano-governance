@@ -19,7 +19,7 @@ if (!organizationName) {
 }
 
 // Create voting-history directory if it doesn't exist
-const votingHistoryDir = path.join(__dirname, 'voting-history');
+const votingHistoryDir = path.join(__dirname, '..', 'voting-history');
 if (!fs.existsSync(votingHistoryDir)) {
     fs.mkdirSync(votingHistoryDir, { recursive: true });
 }

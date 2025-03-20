@@ -6,18 +6,19 @@ function parseMarkdownTable(content) {
     const lines = content.split('\n').filter(line => line.trim());
     const headers = lines[0].split('|').filter(h => h.trim());
 
-    // Find the first non-separator line after the headers
-    const dataLine = lines.find(line => {
+    // Skip the separator line (line with dashes)
+    const dataLines = lines.slice(2).filter(line => {
         const cells = line.split('|').filter(c => c.trim());
         return cells.length === headers.length && !cells.every(cell => cell.includes('---'));
     });
 
-    if (!dataLine) {
-        console.log('No data line found in table');
+    if (dataLines.length === 0) {
+        console.log('No data lines found in table');
         return {};
     }
 
-    const values = dataLine.split('|').filter(v => v.trim());
+    // Use the first data line
+    const values = dataLines[0].split('|').filter(v => v.trim());
     const result = {};
     headers.forEach((header, index) => {
         result[header.trim()] = values[index].trim();
@@ -64,16 +65,20 @@ async function updateMissingRationales() {
         const filePath = path.join(missingRationalesDir, file);
         const content = fs.readFileSync(filePath, 'utf8');
         console.log(`\nProcessing file: ${file}`);
-        console.log('File contents:', content);
 
         const parsed = parseMarkdownTable(content);
         console.log('Parsed data:', parsed);
 
-        if (parsed['Governance Action ID']) {
-            rationaleMap.set(parsed['Governance Action ID'], parsed['Rational']);
-            console.log(`Added rationale for action ID: ${parsed['Governance Action ID']}`);
+        // Look for either 'Governance Action ID' or 'Action ID'
+        const actionId = parsed['Governance Action ID'] || parsed['Action ID'];
+        const rationale = parsed['Rational'] || parsed['Rationale'];
+
+        if (actionId) {
+            rationaleMap.set(actionId, rationale);
+            console.log(`Added rationale for action ID: ${actionId}`);
+            console.log(`Rationale: ${rationale}`);
         } else {
-            console.log('No Governance Action ID found in file');
+            console.log('No Action ID found in file');
         }
     }
 

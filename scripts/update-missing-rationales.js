@@ -3,8 +3,8 @@ const path = require('path');
 
 // Function to extract governance action ID from a voting history entry
 function extractGovernanceActionId(content) {
-    // Match gov_action followed by exactly 70 characters of base32
-    const actionIdMatch = content.match(/Action ID\s+\|\s+(gov_action[a-zA-Z2-7]{70})/);
+    // Match gov_action followed by base32 characters until whitespace or end of line
+    const actionIdMatch = content.match(/Action ID\s+\|\s+(gov_action[a-zA-Z2-7]+)/);
     return actionIdMatch ? actionIdMatch[1].trim() : null;
 }
 

@@ -3,8 +3,20 @@ const path = require('path');
 
 // Function to extract governance action ID from a voting history entry
 function extractGovernanceActionId(content) {
+    // Debug logging
+    console.log('\nTrying to extract Action ID from content:');
+    console.log('Content:', content);
+
     // Match gov_action followed by base32 characters until whitespace or end of line
     const actionIdMatch = content.match(/Action ID\s+\|\s+(gov_action[a-zA-Z2-7]+)/);
+
+    // Debug logging
+    if (actionIdMatch) {
+        console.log('Found match:', actionIdMatch[1]);
+    } else {
+        console.log('No match found');
+    }
+
     return actionIdMatch ? actionIdMatch[1].trim() : null;
 }
 
@@ -24,6 +36,19 @@ function updateRationale(content, newRationale) {
         /(?:Rational|Rationale)\s+\|\s+[^|\n]+/,
         `Rational       | ${newRationale}`
     );
+}
+
+// Function to debug content structure
+function debugContent(content) {
+    console.log('\nContent structure:');
+    console.log('Length:', content.length);
+    console.log('First 100 chars:', content.substring(0, 100));
+    console.log('Contains "Action ID":', content.includes('Action ID'));
+    console.log('Contains "gov_action":', content.includes('gov_action'));
+    console.log('Character codes:');
+    for (let i = 0; i < Math.min(100, content.length); i++) {
+        console.log(`${i}: ${content.charCodeAt(i)} ('${content[i]}')`);
+    }
 }
 
 // Main function to process files
@@ -50,6 +75,12 @@ async function updateMissingRationales() {
         console.log(`\nProcessing votes file: ${votesFile}`);
         let content = fs.readFileSync(votesFile, 'utf8');
         const entries = content.split('---\n\n').filter(entry => entry.trim());
+
+        // Debug the first entry
+        if (entries.length > 0) {
+            console.log('\nDebugging first entry:');
+            debugContent(entries[0]);
+        }
 
         let updated = false;
         const updatedEntries = entries.map(entry => {

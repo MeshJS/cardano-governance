@@ -71,12 +71,33 @@ async function updateMissingRationales() {
 
         console.log(`\nProcessing votes file: ${votesFile}`);
         let content = fs.readFileSync(votesFile, 'utf8');
-        const entries = content.split('---\n\n').filter(entry => entry.trim());
 
-        // Debug the first entry
-        if (entries.length > 0) {
-            console.log('\nDebugging first entry:');
-            debugContent(entries[0]);
+        // Split content into entries, skipping the header
+        const lines = content.split('\n');
+        const entries = [];
+        let currentEntry = [];
+        let foundFirstEntry = false;
+
+        for (const line of lines) {
+            if (line.startsWith('| MeshJS') && !foundFirstEntry) {
+                foundFirstEntry = true;
+            }
+
+            if (foundFirstEntry) {
+                if (line.trim() === '---') {
+                    if (currentEntry.length > 0) {
+                        entries.push(currentEntry.join('\n'));
+                        currentEntry = [];
+                    }
+                } else {
+                    currentEntry.push(line);
+                }
+            }
+        }
+
+        // Add the last entry if it exists
+        if (currentEntry.length > 0) {
+            entries.push(currentEntry.join('\n'));
         }
 
         let updated = false;
@@ -108,14 +129,14 @@ async function updateMissingRationales() {
                 console.log('No matching rationale found in map');
                 console.log('Looking for:', trimmedActionId);
                 console.log('Available action IDs:', Object.keys(rationales));
-                console.log('Action ID length:', trimmedActionId.length);
-                console.log('First available ID length:', Object.keys(rationales)[0].length);
             }
             return entry;
         });
 
         if (updated) {
-            const newContent = updatedEntries.join('---\n\n');
+            // Reconstruct the file content with the header
+            const header = lines.slice(0, lines.findIndex(line => line.startsWith('| MeshJS')));
+            const newContent = header.join('\n') + '\n\n' + updatedEntries.join('\n\n---\n\n');
             fs.writeFileSync(votesFile, newContent);
             console.log(`Updated rationales in ${votesFile}`);
         } else {

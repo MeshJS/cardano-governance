@@ -103,17 +103,17 @@ function generateVoteTable(vote, proposalDetails, metadata) {
         rationale = rationale.substring(0, 497) + '...';
     }*/
 
-    return `| ${organizationName}      | Cardano Governance Actions                                                                                                              |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Proposal Title | [${proposalTitle}](https://adastat.net/governances/${vote.proposalTxHash || 'N/A'})                                                                                                   |
-| Hash           | ${vote.proposalTxHash || 'N/A'}                                                                      |
-| Action ID      | ${vote.proposalId || 'N/A'}                                                                  |
-| Type           | ${proposalType}                                                                                                                        |
-| Proposed Epoch | ${proposedEpoch}                                                                                                                              |
-| Expires Epoch  | ${expirationEpoch}                                                                                                                              |
-| Vote           | ${voteText}                                                                                                                                   |
-| Vote Submitted | ${submittedDate}                                                                                                                              |
-| Rational       | ${rationale} |
+    return `| ${organizationName}      | Cardano Governance Actions |
+| -------------- | ------------------------------------------------------- |
+| Proposal Title | [${proposalTitle}](https://adastat.net/governances/${vote.proposalTxHash || 'N/A'}) |
+| Hash           | ${vote.proposalTxHash || 'N/A'} |
+| Action ID      | ${vote.proposalId || 'N/A'} |
+| Type           | ${proposalType} |
+| Proposed Epoch | ${proposedEpoch} |
+| Expires Epoch  | ${expirationEpoch} |
+| Vote           | ${voteText} |
+| Vote Submitted | ${submittedDate} |
+| Rationale       | ${rationale} |
 |Link|https://adastat.net/transactions/${vote.voteTxHash || 'N/A'} |`;
 }
 

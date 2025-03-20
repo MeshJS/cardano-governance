@@ -10,7 +10,7 @@
 | Expires Epoch  | 549                                                                                                                              |
 | Vote           | ✅Yes                                                                                                                                   |
 | Vote Submitted | 3/11/2025                                                                                                                              |
-| Rational       | No rationale available |
+| Rationale       | No rationale available |
 |Link|https://adastat.net/transactions/464ceed8ec269a28d3fee305b1c0d397270b8193fbbb2557ab51c1b070f9171f |
 
 
@@ -26,7 +26,7 @@
 | Expires Epoch  | 546                                                                                                                              |
 | Vote           | ❌No                                                                                                                                   |
 | Vote Submitted | 2/22/2025                                                                                                                              |
-| Rational       | No rationale available |
+| Rationale       | No rationale available |
 |Link|https://adastat.net/transactions/08b9205dcac01fed95287f6dc82f744cf66792c1de9f65d318c1085d2bca5946 |
 
 
@@ -42,5 +42,5 @@
 | Expires Epoch  | 544                                                                                                                              |
 | Vote           | ✅Yes                                                                                                                                   |
 | Vote Submitted | 2/10/2025                                                                                                                              |
-| Rational       | No rationale available |
+| Rationale       | No rationale available |
 |Link|https://adastat.net/transactions/3bed0723c02caca480d000ffa2ca4b4eec82cc8c02d5d8e5d3f9cac6e7bae1f1 |

@@ -10,7 +10,7 @@
 | Expires Epoch  | 529                                                                                                                              |
 | Vote           | ✅Yes                                                                                                                                   |
 | Vote Submitted | 11/25/2024                                                                                                                              |
-| Rational       | No rationale available |
+| Rationale       | No rationale available |
 |Link|https://adastat.net/transactions/657084da4d5331b22d3c4d16778a4c9aec7e1a71e573fca9e3abaa241545f0f4 |
 
 
@@ -26,5 +26,5 @@
 | Expires Epoch  | 521                                                                                                                              |
 | Vote           | ⚪Abstain                                                                                                                                   |
 | Vote Submitted | 11/9/2024                                                                                                                              |
-| Rational       | No rationale available |
+| Rationale       | No rationale available |
 |Link|https://adastat.net/transactions/2b2cd65ea0cb903b07f93cf15bcde1129513c064a6db2af9fba48e90aca3ef9f |

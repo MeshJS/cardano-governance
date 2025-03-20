@@ -58,7 +58,9 @@ async function updateMissingRationales() {
                 return entry;
             }
 
-            console.log(`\nProcessing entry with Action ID: ${actionId}`);
+            // Trim the action ID to remove any whitespace
+            const trimmedActionId = actionId.trim();
+            console.log(`\nProcessing entry with Action ID: ${trimmedActionId}`);
             const currentRationale = extractRationale(entry);
             console.log('Current rationale:', currentRationale);
 
@@ -68,15 +70,17 @@ async function updateMissingRationales() {
                 return entry;
             }
 
-            const rationaleData = rationales[actionId.trim()];
+            const rationaleData = rationales[trimmedActionId];
             if (rationaleData) {
                 console.log('Found new rationale:', rationaleData.rationale);
                 updated = true;
                 return updateRationale(entry, rationaleData.rationale);
             } else {
                 console.log('No matching rationale found in map');
-                console.log('Looking for:', actionId.trim());
+                console.log('Looking for:', trimmedActionId);
                 console.log('Available action IDs:', Object.keys(rationales));
+                console.log('Action ID length:', trimmedActionId.length);
+                console.log('First available ID length:', Object.keys(rationales)[0].length);
             }
             return entry;
         });

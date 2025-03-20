@@ -8,6 +8,15 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 const drepId = config.drepId;
 const organizationName = config.organizationName;
 
+// Read missing rationales file
+const missingRationalesPath = path.join(__dirname, '..', 'voting-history', 'missing-voting-rationales', 'rationales.json');
+let missingRationales = {};
+try {
+    missingRationales = JSON.parse(fs.readFileSync(missingRationalesPath, 'utf8'));
+} catch (error) {
+    console.warn('Could not read missing rationales file:', error.message);
+}
+
 if (!drepId) {
     console.error('DRep ID not found in config.json');
     process.exit(1);
@@ -96,6 +105,15 @@ function generateVoteTable(vote, proposalDetails, metadata) {
 
     // Process rationale text to prevent table disruption
     let rationale = metadata?.body?.comment || metadata?.body?.rationale || 'No rationale available';
+
+    // Check for missing rationale in the rationales.json file
+    if (rationale === 'No rationale available' && vote.proposalTxHash) {
+        const missingRationale = missingRationales[vote.proposalTxHash];
+        if (missingRationale && missingRationale.rationale) {
+            rationale = missingRationale.rationale;
+        }
+    }
+
     rationale = rationale.replace(/\n/g, ' ');
     rationale = rationale.replace(/\s+/g, ' ');
     rationale = rationale.replace(/\|/g, '\\|');

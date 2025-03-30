@@ -122,6 +122,17 @@ async function generateContextFile(proposal, contextFolder) {
     console.log(`Generated context file for proposal ${proposal.proposal_id}`);
 }
 
+async function updateProposalsJson(proposals) {
+    const proposalsJsonPath = path.join(voteContextDir, 'proposals.json');
+    const proposalsData = proposals.map(proposal => ({
+        action_id: proposal.proposal_id,
+        title: proposal.title || 'Untitled Proposal'
+    }));
+
+    fs.writeFileSync(proposalsJsonPath, JSON.stringify(proposalsData, null, 2));
+    console.log('Updated proposals.json with current proposal list');
+}
+
 async function processProposals() {
     try {
         // Get all proposals and voted proposals
@@ -129,6 +140,9 @@ async function processProposals() {
             getProposalList(),
             getVotedProposals(drepId)
         ]);
+
+        // Update proposals.json with all proposals
+        await updateProposalsJson(allProposals);
 
         // Create a set of voted proposal IDs for quick lookup
         const votedProposalIds = new Set(votedProposals.map(p => p.proposal_id));

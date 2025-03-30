@@ -31,6 +31,15 @@ async function getProposalList() {
         }
 
         console.log(`Found ${response.data.length} total proposals`);
+        console.log('\nProposal Details:');
+        response.data.forEach((proposal, index) => {
+            console.log(`\nProposal ${index + 1}:`);
+            console.log(`ID: ${proposal.proposal_id}`);
+            console.log(`Title: ${proposal.meta_json?.body?.title || 'Untitled'}`);
+            console.log(`Proposed Epoch: ${proposal.proposed_epoch}`);
+            console.log(`Block Time: ${new Date(proposal.block_time * 1000).toLocaleString()}`);
+            console.log('------------------------');
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching proposal list:', error.message);
@@ -126,7 +135,7 @@ async function updateProposalsJson(proposals) {
     const proposalsJsonPath = path.join(voteContextDir, 'proposals.json');
     const proposalsData = proposals.map(proposal => ({
         action_id: proposal.proposal_id,
-        title: proposal.title || 'Untitled Proposal'
+        title: proposal.meta_json?.body?.title || 'Untitled Proposal'
     }));
 
     fs.writeFileSync(proposalsJsonPath, JSON.stringify(proposalsData, null, 2));

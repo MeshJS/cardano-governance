@@ -18,7 +18,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const votedSuffixes = extractActionIDSuffixes(votingHistoryText);
     console.log("Voted suffixes:", votedSuffixes);
 
-    // 2. Fetch the vote-context directories
+    // 2. Fetch the proposals.json file
+    const proposalsUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/vote-context/proposals.json`;
+    console.log("Fetching proposals from:", proposalsUrl);
+    const proposalsResponse = await fetch(proposalsUrl);
+    if (!proposalsResponse.ok) {
+      throw new Error("Error fetching proposals.json");
+    }
+    const proposals = await proposalsResponse.json();
+
+    // 3. Fetch the vote-context directories
     const voteContextUrl = `https://api.github.com/repos/${owner}/${repo}/contents/vote-context/2025`;
     console.log("Fetching vote-context from:", voteContextUrl);
     const voteContextResponse = await fetch(voteContextUrl);
@@ -27,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const voteContextData = await voteContextResponse.json();
 
-    // 3. Filter for proposals that have NOT been voted on.
+    // 4. Filter for proposals that have NOT been voted on.
     // Assumption: each directory name is like "547_2k80" where the part after "_" is the suffix.
     const pendingProposals = voteContextData.filter(item => {
       if (item.type !== "dir") return false;
@@ -38,8 +47,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       return !votedSuffixes.includes(suffix);
     });
 
-    // 4. Display the pending proposals as buttons.
-    displayPendingProposals(pendingProposals);
+    // 5. Display the pending proposals as cards with titles
+    displayPendingProposals(pendingProposals, proposals);
 
   } catch (error) {
     console.error(error);
@@ -78,10 +87,10 @@ function extractActionIDSuffixes(markdown) {
 }
 
 /**
- * Displays pending proposals as buttons.
+ * Displays pending proposals as cards with titles and buttons.
  * When a button is clicked, it opens the GitHub edit page for that proposal's JSON file.
  */
-function displayPendingProposals(proposals) {
+function displayPendingProposals(proposals, proposalsData) {
   const container = document.getElementById("pending-proposals");
   container.innerHTML = ""; // Clear any loading text.
 
@@ -90,22 +99,49 @@ function displayPendingProposals(proposals) {
     return;
   }
 
-  // Create a container for the list
-  const listContainer = document.createElement("div");
-  listContainer.style.display = "flex";
-  listContainer.style.flexDirection = "column";
-  listContainer.style.gap = "10px";
+  // Create a container for the cards
+  const cardsContainer = document.createElement("div");
+  cardsContainer.style.display = "grid";
+  cardsContainer.style.gridTemplateColumns = "repeat(auto-fill, minmax(300px, 1fr))";
+  cardsContainer.style.gap = "20px";
+  cardsContainer.style.padding = "20px";
 
   proposals.forEach(proposal => {
-    // Create a row container for each proposal
-    const rowContainer = document.createElement("div");
-    rowContainer.style.display = "flex";
-    rowContainer.style.gap = "10px";
-    rowContainer.style.alignItems = "center";
+    // Create a card container for each proposal
+    const card = document.createElement("div");
+    card.style.border = "1px solid #ddd";
+    card.style.borderRadius = "8px";
+    card.style.padding = "15px";
+    card.style.backgroundColor = "#fff";
+    card.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+
+    // Find the matching proposal data
+    const proposalData = proposalsData.find(p =>
+      p.action_id.includes(proposal.name.split('_')[1])
+    );
+
+    // Create title element
+    const title = document.createElement("h3");
+    title.textContent = proposalData ? proposalData.title : "Untitled Proposal";
+    title.style.margin = "0 0 15px 0";
+    title.style.fontSize = "1.1em";
+    title.style.color = "#333";
+
+    // Create buttons container
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.style.display = "flex";
+    buttonsContainer.style.flexDirection = "column";
+    buttonsContainer.style.gap = "10px";
 
     // Create the main proposal button
     const btn = document.createElement("button");
-    btn.textContent = proposal.name;
+    btn.textContent = "Enter Proposal Rationale";
+    btn.style.padding = "8px 12px";
+    btn.style.backgroundColor = "#0366d6";
+    btn.style.color = "white";
+    btn.style.border = "none";
+    btn.style.borderRadius = "4px";
+    btn.style.cursor = "pointer";
 
     // When clicked, open the GitHub edit page
     btn.addEventListener("click", () => {
@@ -116,6 +152,11 @@ function displayPendingProposals(proposals) {
     // Create the copy button
     const copyBtn = document.createElement("button");
     copyBtn.textContent = "Copy raw GitHub path URL";
+    copyBtn.style.padding = "8px 12px";
+    copyBtn.style.backgroundColor = "#f6f8fa";
+    copyBtn.style.border = "1px solid #ddd";
+    copyBtn.style.borderRadius = "4px";
+    copyBtn.style.cursor = "pointer";
 
     // When clicked, copy the raw GitHub URL to clipboard
     copyBtn.addEventListener("click", () => {
@@ -132,14 +173,16 @@ function displayPendingProposals(proposals) {
       });
     });
 
-    // Add both buttons to the row container
-    rowContainer.appendChild(btn);
-    rowContainer.appendChild(copyBtn);
+    // Add elements to the card
+    buttonsContainer.appendChild(btn);
+    buttonsContainer.appendChild(copyBtn);
+    card.appendChild(title);
+    card.appendChild(buttonsContainer);
 
-    // Add the row container to the list container
-    listContainer.appendChild(rowContainer);
+    // Add the card to the cards container
+    cardsContainer.appendChild(card);
   });
 
-  // Add the list container to the main container
-  container.appendChild(listContainer);
+  // Add the cards container to the main container
+  container.appendChild(cardsContainer);
 }

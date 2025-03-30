@@ -3,6 +3,7 @@ name: Update Proposals
 on:
   schedule:
     - cron: '0 0 * * 1'  # Run at midnight (00:00 UTC) every Monday
+  workflow_dispatch:
 
 jobs:
   update-proposals:

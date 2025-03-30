@@ -77,20 +77,27 @@ async function getVotedProposals(drepId) {
 }
 
 function createContextFolder(proposal) {
-    // Get current date in MM_DD format
-    const date = new Date();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    // Get proposed_epoch and block_time from proposal data
+    const proposedEpoch = proposal.proposed_epoch;
+    const blockTime = proposal.block_time;
+
+    if (!proposedEpoch) {
+        throw new Error(`No proposed_epoch found for proposal ${proposal.proposal_id}`);
+    }
+
+    if (!blockTime) {
+        throw new Error(`No block_time found for proposal ${proposal.proposal_id}`);
+    }
 
     // Get last 4 digits of proposal_id
     const proposalId = proposal.proposal_id;
     const lastFourDigits = proposalId.slice(-4);
 
-    // Create folder name in format MM_DD_2kXX
-    const folderName = `${month}_${day}_${lastFourDigits}`;
+    // Create folder name in format epoch_2kXX
+    const folderName = `${proposedEpoch}_${lastFourDigits}`;
 
-    // Create year folder
-    const year = date.getFullYear().toString();
+    // Convert block_time to year
+    const year = new Date(blockTime * 1000).getFullYear().toString();
     const yearDir = path.join(voteContextDir, year);
     if (!fs.existsSync(yearDir)) {
         fs.mkdirSync(yearDir, { recursive: true });

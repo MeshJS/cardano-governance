@@ -36,8 +36,9 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add vote-context/**/*.jsonId
-        git commit -m "Update proposal voting contexts"
+        git add vote-context/proposals.json || true
+        git add vote-context/**/*.jsonId || true
+        git commit -m "Update proposal voting contexts" || exit 0
         
     - name: Push changes
       if: steps.git-check.outputs.changes > 0

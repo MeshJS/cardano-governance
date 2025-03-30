@@ -182,7 +182,7 @@ function displayPendingProposals(proposals, proposalsData) {
 
     // Create the main proposal button
     const btn = document.createElement("button");
-    btn.textContent = "Enter Proposal Rationale";
+    btn.textContent = "Enter Vote Rationale";
     btn.style.padding = "8px 12px";
     btn.style.backgroundColor = "#0366d6";
     btn.style.color = "white";

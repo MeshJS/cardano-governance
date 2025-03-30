@@ -18,6 +18,25 @@ if (!fs.existsSync(voteContextDir)) {
     fs.mkdirSync(voteContextDir, { recursive: true });
 }
 
+async function getProposalTitle(proposal) {
+    // First try meta_json
+    if (proposal.meta_json?.body?.title) {
+        return proposal.meta_json.body.title;
+    }
+
+    // If meta_json is null, try meta_url
+    if (proposal.meta_url) {
+        try {
+            const response = await axios.get(proposal.meta_url);
+            return response.data.body.title;
+        } catch (error) {
+            console.error(`Error fetching metadata from URL for proposal ${proposal.proposal_id}:`, error.message);
+        }
+    }
+
+    return 'Untitled';
+}
+
 async function getProposalList() {
     try {
         const response = await axios.get('https://api.koios.rest/api/v1/proposal_list', {
@@ -32,14 +51,15 @@ async function getProposalList() {
 
         console.log(`Found ${response.data.length} total proposals`);
         console.log('\nProposal Details:');
-        response.data.forEach((proposal, index) => {
-            console.log(`\nProposal ${index + 1}:`);
+        for (const proposal of response.data) {
+            const title = await getProposalTitle(proposal);
+            console.log(`\nProposal ${proposal.proposal_id}:`);
             console.log(`ID: ${proposal.proposal_id}`);
-            console.log(`Title: ${proposal.meta_json?.body?.title || 'Untitled'}`);
+            console.log(`Title: ${title}`);
             console.log(`Proposed Epoch: ${proposal.proposed_epoch}`);
             console.log(`Block Time: ${new Date(proposal.block_time * 1000).toLocaleString()}`);
             console.log('------------------------');
-        });
+        }
         return response.data;
     } catch (error) {
         console.error('Error fetching proposal list:', error.message);
@@ -133,10 +153,10 @@ async function generateContextFile(proposal, contextFolder) {
 
 async function updateProposalsJson(proposals) {
     const proposalsJsonPath = path.join(voteContextDir, 'proposals.json');
-    const proposalsData = proposals.map(proposal => ({
+    const proposalsData = await Promise.all(proposals.map(async proposal => ({
         action_id: proposal.proposal_id,
-        title: proposal.meta_json?.body?.title || 'Untitled Proposal'
-    }));
+        title: await getProposalTitle(proposal)
+    })));
 
     fs.writeFileSync(proposalsJsonPath, JSON.stringify(proposalsData, null, 2));
     console.log('Updated proposals.json with current proposal list');

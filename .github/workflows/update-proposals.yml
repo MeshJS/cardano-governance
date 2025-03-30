@@ -1,0 +1,39 @@
+name: Update Proposals
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Run at midnight (00:00 UTC) every Monday
+
+jobs:
+  update-proposals:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm install
+        
+    - name: Run proposal context script
+      run: node scripts/proposal-context.js
+      env:
+        KOIOS_API_KEY: ${{ secrets.KOIOS_API_KEY }}
+        
+    - name: Configure Git
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+    - name: Add and commit changes
+      run: |
+        git add vote-context/proposals.json
+        git add vote-context/*/Vote_Context.jsonId
+        git commit -m "Update proposal context files" || echo "No changes to commit"
+        
+    - name: Push changes
+      run: git push 

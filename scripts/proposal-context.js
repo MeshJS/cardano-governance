@@ -12,14 +12,8 @@ if (!drepId) {
     process.exit(1);
 }
 
-// Create voting-history directory if it doesn't exist
-const votingHistoryDir = path.join(__dirname, '..', 'voting-history');
-if (!fs.existsSync(votingHistoryDir)) {
-    fs.mkdirSync(votingHistoryDir, { recursive: true });
-}
-
-// Create vote_context directory inside voting-history if it doesn't exist
-const voteContextDir = path.join(votingHistoryDir, 'vote-context');
+// Create vote_context directory in root if it doesn't exist
+const voteContextDir = path.join(__dirname, '..', 'vote-context');
 if (!fs.existsSync(voteContextDir)) {
     fs.mkdirSync(voteContextDir, { recursive: true });
 }
@@ -114,7 +108,7 @@ function createContextFolder(proposal) {
 
 async function generateContextFile(proposal, contextFolder) {
     // Read the sample context file
-    const sampleContextPath = path.join(votingHistoryDir, 'vote-context', 'sample_context.jsonId');
+    const sampleContextPath = path.join(__dirname, '..', 'vote-context', 'sample_context.jsonId');
     let contextData;
     try {
         contextData = JSON.parse(fs.readFileSync(sampleContextPath, 'utf8'));

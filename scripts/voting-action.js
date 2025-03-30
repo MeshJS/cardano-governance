@@ -9,7 +9,7 @@ const drepId = config.drepId;
 const organizationName = config.organizationName;
 
 // Read missing rationales file
-const missingRationalesPath = path.join(__dirname, '..', 'voting-history', 'vote-context', 'missing-voting-rationales', 'rationales.json');
+const missingRationalesPath = path.join(__dirname, '..', 'vote-context', 'missing-voting-rationales', 'rationales.json');
 let missingRationales = {};
 try {
     missingRationales = JSON.parse(fs.readFileSync(missingRationalesPath, 'utf8'));

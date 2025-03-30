@@ -5,18 +5,9 @@ const repo = 'cardano-governance';
 // When the DOM is loaded, start processing.
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // 1. Fetch the voting history markdown file
-    const votingHistoryUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/voting-history/2025/2025-votes.md`;
-    console.log("Fetching voting history from:", votingHistoryUrl);
-    const votingHistoryResponse = await fetch(votingHistoryUrl);
-    if (!votingHistoryResponse.ok) {
-      throw new Error("Error fetching voting history markdown");
-    }
-    const votingHistoryText = await votingHistoryResponse.text();
-
-    // Extract the last 4 characters (suffixes) of each Action ID in the markdown.
-    const votedSuffixes = extractActionIDSuffixes(votingHistoryText);
-    console.log("Voted suffixes:", votedSuffixes);
+    // 1. Fetch the voting history markdown files from all years
+    const years = await fetchAvailableYears();
+    console.log("Available years:", years);
 
     // 2. Fetch the proposals.json file
     const proposalsUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/vote-context/proposals.json`;
@@ -27,28 +18,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const proposals = await proposalsResponse.json();
 
-    // 3. Fetch the vote-context directories
-    const voteContextUrl = `https://api.github.com/repos/${owner}/${repo}/contents/vote-context/2025`;
-    console.log("Fetching vote-context from:", voteContextUrl);
-    const voteContextResponse = await fetch(voteContextUrl);
-    if (!voteContextResponse.ok) {
-      throw new Error("Error fetching vote-context directories");
+    // 3. Fetch all voted suffixes from all years
+    const votedSuffixes = new Set();
+    for (const year of years) {
+      const votingHistoryUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/voting-history/${year}/${year}-votes.md`;
+      console.log("Fetching voting history from:", votingHistoryUrl);
+      const votingHistoryResponse = await fetch(votingHistoryUrl);
+      if (votingHistoryResponse.ok) {
+        const votingHistoryText = await votingHistoryResponse.text();
+        const yearSuffixes = extractActionIDSuffixes(votingHistoryText);
+        yearSuffixes.forEach(suffix => votedSuffixes.add(suffix));
+      }
     }
-    const voteContextData = await voteContextResponse.json();
+    console.log("All voted suffixes:", Array.from(votedSuffixes));
 
-    // 4. Filter for proposals that have NOT been voted on.
-    // Assumption: each directory name is like "547_2k80" where the part after "_" is the suffix.
-    const pendingProposals = voteContextData.filter(item => {
-      if (item.type !== "dir") return false;
-      const parts = item.name.split('_');
-      if (parts.length < 2) return false;
-      const suffix = parts[1];
-      // Proposal is pending if its suffix does NOT appear in the votedSuffixes list.
-      return !votedSuffixes.includes(suffix);
-    });
+    // 4. Fetch all pending proposals from all years
+    const allPendingProposals = [];
+    for (const year of years) {
+      const voteContextUrl = `https://api.github.com/repos/${owner}/${repo}/contents/vote-context/${year}`;
+      console.log("Fetching vote-context from:", voteContextUrl);
+      const voteContextResponse = await fetch(voteContextUrl);
+      if (voteContextResponse.ok) {
+        const voteContextData = await voteContextResponse.json();
+
+        // Filter for proposals that have NOT been voted on
+        const yearPendingProposals = voteContextData.filter(item => {
+          if (item.type !== "dir") return false;
+          const parts = item.name.split('_');
+          if (parts.length < 2) return false;
+          const suffix = parts[1];
+          return !votedSuffixes.has(suffix);
+        });
+
+        // Add year information to each proposal
+        yearPendingProposals.forEach(proposal => {
+          proposal.year = year;
+        });
+
+        allPendingProposals.push(...yearPendingProposals);
+      }
+    }
 
     // 5. Display the pending proposals as cards with titles
-    displayPendingProposals(pendingProposals, proposals);
+    displayPendingProposals(allPendingProposals, proposals);
 
   } catch (error) {
     console.error(error);
@@ -56,6 +68,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       `<p>Error loading proposals: ${error.message}</p>`;
   }
 });
+
+/**
+ * Fetches the list of available years from the repository
+ */
+async function fetchAvailableYears() {
+  const yearsUrl = `https://api.github.com/repos/${owner}/${repo}/contents/vote-context`;
+  const response = await fetch(yearsUrl);
+  if (!response.ok) {
+    throw new Error("Error fetching available years");
+  }
+  const data = await response.json();
+  return data
+    .filter(item => {
+      // Only include directories that are years 2024 or later
+      return item.type === "dir" &&
+        /^\d{4}$/.test(item.name) &&
+        parseInt(item.name) >= 2025;
+    })
+    .map(item => item.name)
+    .sort((a, b) => b - a); // Sort years in descending order
+}
 
 /**
  * Extracts the last 4 characters of each Action ID from the markdown text.
@@ -94,8 +127,11 @@ function displayPendingProposals(proposals, proposalsData) {
   const container = document.getElementById("pending-proposals");
   container.innerHTML = ""; // Clear any loading text.
 
-  if (proposals.length === 0) {
-    container.innerHTML = "<p>No pending proposals. All proposals have been voted on!</p>";
+  // Filter proposals to only include those from 2024 and later
+  const recentProposals = proposals.filter(proposal => parseInt(proposal.year) >= 2025);
+
+  if (recentProposals.length === 0) {
+    container.innerHTML = "<p>No pending proposals from 2025 or later. All recent proposals have been voted on!</p>";
     return;
   }
 
@@ -106,7 +142,7 @@ function displayPendingProposals(proposals, proposalsData) {
   cardsContainer.style.gap = "20px";
   cardsContainer.style.padding = "20px";
 
-  proposals.forEach(proposal => {
+  recentProposals.forEach(proposal => {
     // Create a card container for each proposal
     const card = document.createElement("div");
     card.style.border = "1px solid #ddd";
@@ -127,6 +163,17 @@ function displayPendingProposals(proposals, proposalsData) {
     title.style.fontSize = "1.1em";
     title.style.color = "#333";
 
+    // Create year badge
+    const yearBadge = document.createElement("span");
+    yearBadge.textContent = proposal.year;
+    yearBadge.style.backgroundColor = "#e1e4e8";
+    yearBadge.style.padding = "2px 8px";
+    yearBadge.style.borderRadius = "12px";
+    yearBadge.style.fontSize = "0.8em";
+    yearBadge.style.color = "#24292e";
+    yearBadge.style.marginBottom = "10px";
+    yearBadge.style.display = "inline-block";
+
     // Create buttons container
     const buttonsContainer = document.createElement("div");
     buttonsContainer.style.display = "flex";
@@ -145,7 +192,7 @@ function displayPendingProposals(proposals, proposalsData) {
 
     // When clicked, open the GitHub edit page
     btn.addEventListener("click", () => {
-      const editUrl = `https://github.com/${owner}/${repo}/edit/main/vote-context/2025/${proposal.name}/Vote_Context.jsonId`;
+      const editUrl = `https://github.com/${owner}/${repo}/edit/main/vote-context/${proposal.year}/${proposal.name}/Vote_Context.jsonId`;
       window.open(editUrl, "_blank");
     });
 
@@ -160,7 +207,7 @@ function displayPendingProposals(proposals, proposalsData) {
 
     // When clicked, copy the raw GitHub URL to clipboard
     copyBtn.addEventListener("click", () => {
-      const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/vote-context/2025/${proposal.name}/Vote_Context.jsonId`;
+      const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/vote-context/${proposal.year}/${proposal.name}/Vote_Context.jsonId`;
       navigator.clipboard.writeText(rawUrl).then(() => {
         // Optional: Show a brief success message
         const originalText = copyBtn.textContent;
@@ -176,6 +223,7 @@ function displayPendingProposals(proposals, proposalsData) {
     // Add elements to the card
     buttonsContainer.appendChild(btn);
     buttonsContainer.appendChild(copyBtn);
+    card.appendChild(yearBadge);
     card.appendChild(title);
     card.appendChild(buttonsContainer);
 

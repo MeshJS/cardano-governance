@@ -2,7 +2,7 @@ name: Generate Proposal Context
 
 on:
   schedule:
-    - cron: '0 0 * * 1'  # Runs at midnight UTC every Monday
+    - cron: '0 0 * * 2'  # Runs at midnight UTC every Tuesday
   workflow_dispatch:
 
 jobs:

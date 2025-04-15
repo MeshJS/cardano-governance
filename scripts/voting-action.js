@@ -171,10 +171,12 @@ async function getDRepVotes(drepId) {
             throw new Error('KOIOS_API_KEY environment variable is not set');
         }
 
-        // Fetch proposal details first
+        // Fetch proposal details first (used for additional info in vote table generation)
         const proposalDetails = await getProposalDetails(drepId);
 
-        const response = await axios.get(`https://api.koios.rest/api/v1/drep_votes?_drep_id=${drepId}`, {
+        // Build the vote_list API URL with the voter_id filter and column selection
+        const url = `https://api.koios.rest/api/v1/vote_list?voter_id=eq.${drepId}&select=proposal_id,proposal_tx_hash,proposal_index,vote_tx_hash,block_time,vote,meta_url,meta_hash`;
+        const response = await axios.get(url, {
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
                 'accept': 'application/json'
@@ -204,6 +206,7 @@ async function getDRepVotes(drepId) {
                 continue;
             }
 
+            // Process vote data (append '00' to proposal_tx_hash per original logic)
             const processedVote = {
                 proposalId: vote.proposal_id,
                 proposalTxHash: vote.proposal_tx_hash + '00',
@@ -221,20 +224,18 @@ async function getDRepVotes(drepId) {
                 metadata = await fetchMetadata(processedVote.metaUrl);
             }
 
-            // Generate vote table
+            // Generate the markdown vote table
             processedVote.table = generateVoteTable(processedVote, proposalDetails, metadata);
 
-            // Get year from blockTime
+            // Group votes by year
             const year = new Date(processedVote.blockTime).getFullYear();
-
-            // Add to year group
             if (!votesByYear[year]) {
                 votesByYear[year] = [];
             }
             votesByYear[year].push(processedVote);
         }
 
-        // Generate markdown files for each year
+        // Generate yearly markdown files for each grouped year
         for (const [year, votes] of Object.entries(votesByYear)) {
             generateYearlyMarkdown(votes, parseInt(year));
         }
@@ -249,4 +250,4 @@ async function getDRepVotes(drepId) {
     }
 }
 
-getDRepVotes(drepId); 
+getDRepVotes(drepId);

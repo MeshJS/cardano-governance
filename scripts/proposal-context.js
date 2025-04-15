@@ -136,6 +136,14 @@ function createContextFolder(proposal) {
 }
 
 async function generateContextFile(proposal, contextFolder) {
+    const filePath = path.join(contextFolder, 'Vote_Context.jsonId');
+
+    // Check if file already exists
+    if (fs.existsSync(filePath)) {
+        console.log(`Context file already exists for proposal ${proposal.proposal_id}, skipping...`);
+        return;
+    }
+
     // Read the sample context file
     const sampleContextPath = path.join(__dirname, '..', 'vote-context', 'sample_context.jsonId');
     let contextData;
@@ -146,7 +154,6 @@ async function generateContextFile(proposal, contextFolder) {
         process.exit(1);
     }
 
-    const filePath = path.join(contextFolder, 'Vote_Context.jsonId');
     fs.writeFileSync(filePath, JSON.stringify(contextData, null, 2));
     console.log(`Generated context file for proposal ${proposal.proposal_id}`);
 }

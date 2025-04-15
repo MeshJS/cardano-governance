@@ -174,8 +174,8 @@ async function getDRepVotes(drepId) {
         // Fetch proposal details first (used for additional info in vote table generation)
         const proposalDetails = await getProposalDetails(drepId);
 
-        // Build the vote_list API URL with the voter_id filter and column selection
-        const url = `https://api.koios.rest/api/v1/vote_list?voter_id=eq.${drepId}&select=proposal_id,proposal_tx_hash,proposal_index,vote_tx_hash,block_time,vote,meta_url,meta_hash`;
+        // Build the vote_list API URL with the filtering using _voter_id and column selection
+        const url = `https://api.koios.rest/api/v1/vote_list?_voter_id=eq.${drepId}&select=proposal_id,proposal_tx_hash,proposal_index,vote_tx_hash,block_time,vote,meta_url,meta_hash`;
         const response = await axios.get(url, {
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
